@@ -1,4 +1,7 @@
 'use strict';
+var container = document.querySelector(".container");
+var resultArr = [];
+var time;
 
 function shuffle(arr) {
   var currentIndex = arr.length,
@@ -14,6 +17,7 @@ function shuffle(arr) {
   return arr;
 }
 
+var winStr = "";
 var renderField = function(fieldRows, fieldCols) {
   var arr = [];
   for (var i = 1; i < fieldRows * fieldCols; i++) {
@@ -43,23 +47,30 @@ var renderField = function(fieldRows, fieldCols) {
     }
     li.setAttribute('data-index', 10 * row + col);
     chipList.appendChild(li);
-    col++; 
+    col++;
+    winStr += j + 1;
   }
+  winStr = winStr.slice(0, winStr.length - 1) + " ";
   var emptyLi = chipList.lastElementChild;
   emptyLi.innerText = '';
   emptyLi.setAttribute('id', 'empty');
 
   fragment.appendChild(chipList);
-  var container = document.querySelector(".container");
   container.innerHTML = "";
   container.appendChild(fragment);
   chipList.addEventListener('click', onChipClick);
+  time = performance.now();
 };
 
-var resultArr = [];
-var winStr = "";
 
-// for (var )
+var onWin = function() {
+    time = (performance.now() - time) / 1000;
+    var winMessage = document.createElement("p");
+    winMessage.innerText = "Ура! Вы решили головоломку за " + Math.floor(time / 60) + " мин " + Math.floor(time) + " c!";
+    winMessage.classList.add("win-message");
+    container.appendChild(winMessage);
+}
+
 var onChipClick = function(e) {
     var field = document.querySelector('.field');
     var targetChip = e.target;
@@ -80,9 +91,11 @@ var onChipClick = function(e) {
         emptyChip.setAttribute('data-index', targetChipIndex);
         targetChip.setAttribute('data-index', emptyChipIndex);
   
-        resultArr[targetChip.getAttribute('data-index')] = targetChip.innerText;
-        resultArr[emptyChip.getAttribute('data-index')] = "";
-        console.log(resultArr);
+        resultArr[emptyChipIndex] = targetChip.innerText;
+        resultArr[targetChipIndex] = " ";
+        if (resultArr.join('') === winStr) {
+            setTimeout(onWin, 300);
+        }
     }
   };
 

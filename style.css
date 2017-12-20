@@ -50,3 +50,9 @@
 .title {
     text-align: center;
 }
+
+.win-message {
+    color: green;
+    font-size: 20px;
+    text-align: center;
+}
